@@ -1,26 +1,33 @@
 "use strict";
 
-const taskForm = $('form').first();
+const taskForm = $("form").first();
 const listContainer = $(".js--todos-wrapper");
 const taskItem = $(".todo-item");
 
-let taskStorage =JSON.parse(localStorage.getItem("TaskList")) || [];
+let taskStorage = JSON.parse(localStorage.getItem("TaskList")) || [];
 
 for (let i = 0; i < taskStorage.length; i++) {
-  const { task, completed } = taskStorage[i];
-  generateTaskBlock(task, completed);
+  const { task, completed, id } = taskStorage[i];
+  generateTaskBlock(task, completed, id);
 }
 
-function generateTaskBlock(text, check) {
+function generateTaskBlock(text, check, id) {
+  //const newTaskDiv = $('<li></li>');
   const newTaskItem = $(taskItem).clone(true);
+  newTaskItem.attr("id", id);
+  newTaskItem.addClass("todo-item");
   newTaskItem.find(".todo-item__description").text(text);
-  newTaskItem.css('display','');
+  newTaskItem.css("display", "");
   const checker = newTaskItem.find("input");
-  checker.prop('checked', check)
+  checker.prop("checked", check);
   if (check) {
     $(checker).parent().addClass("todo-item--checked");
   }
   $(listContainer).append(newTaskItem);
+  //newTaskDiv.append(newTaskItem);
+  //listContainer.append(newTaskDiv);
+  console.log(newTaskItem.attr("id"));
+  console.log(newTaskItem.children().attr("class"));
 }
 
 // On form submit
@@ -36,7 +43,7 @@ $(taskForm).submit((event) => {
   taskStorage.push(newTask);
   localStorage.setItem("TaskList", JSON.stringify(taskStorage));
 
-  generateTaskBlock(formInput, false);
+  generateTaskBlock(formInput, false, id);
   $(taskForm).find('input[name="value"]').val("");
 });
 
@@ -69,5 +76,32 @@ $(document).click((event) => {
     }
 
     localStorage.setItem("TaskList", JSON.stringify(taskStorage));
+  }
+});
+
+//Modal window feature
+
+$(listContainer).click((event) => {
+  if (
+    $(event.target).parent().hasClass("todo-item") &&
+    !$(event.target).hasClass("todo-item__delete") &&
+    !$(event.target).is("checkbox")
+  ) {
+    const modalW = $("#exampleModal");
+    const modal = new bootstrap.Modal(modalW[0]);
+
+    const localStorageTaskList = JSON.parse(localStorage.getItem("TaskList"));
+    const eventId = $(event.target).parent().attr("id");
+    const itemInTheList = localStorageTaskList.find(
+      (item) => item.id === eventId
+    );
+
+    if (itemInTheList) {
+      modalW.find(".modal-body").text(itemInTheList.task);
+      modal.show();
+      modal;
+    } else {
+      console.log("Item not found in the list.");
+    }
   }
 });
