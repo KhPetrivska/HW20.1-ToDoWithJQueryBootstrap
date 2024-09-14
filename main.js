@@ -85,7 +85,7 @@ $(listContainer).click((event) => {
   if (
     $(event.target).parent().hasClass("todo-item") &&
     !$(event.target).hasClass("todo-item__delete") &&
-    !$(event.target).is("checkbox")
+    !$(event.target).is(":checkbox")
   ) {
     const modalW = $("#exampleModal");
     const modal = new bootstrap.Modal(modalW[0]);
