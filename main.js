@@ -24,10 +24,6 @@ function generateTaskBlock(text, check, id) {
     $(checker).parent().addClass("todo-item--checked");
   }
   $(listContainer).append(newTaskItem);
-  //newTaskDiv.append(newTaskItem);
-  //listContainer.append(newTaskDiv);
-  console.log(newTaskItem.attr("id"));
-  console.log(newTaskItem.children().attr("class"));
 }
 
 // On form submit
