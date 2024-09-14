@@ -1,10 +1,10 @@
 "use strict";
 
-const taskForm = document.forms[0];
-const listContainer = document.querySelector(".js--todos-wrapper");
-const taskItem = document.querySelector(".todo-item");
+const taskForm = $('form').first();
+const listContainer = $(".js--todos-wrapper");
+const taskItem = $(".todo-item");
 
-let taskStorage = JSON.parse(localStorage.getItem("TaskList")) || [];
+let taskStorage =JSON.parse(localStorage.getItem("TaskList")) || [];
 
 for (let i = 0; i < taskStorage.length; i++) {
   const { task, completed } = taskStorage[i];
@@ -12,22 +12,21 @@ for (let i = 0; i < taskStorage.length; i++) {
 }
 
 function generateTaskBlock(text, check) {
-  const newTaskItem = taskItem.cloneNode(true);
-  newTaskItem.getElementsByClassName("todo-item__description")[0].textContent =
-    text;
-  newTaskItem.style.display = "";
-  const checker = newTaskItem.querySelector("input");
-  checker.checked = check;
+  const newTaskItem = $(taskItem).clone(true);
+  newTaskItem.find(".todo-item__description").text(text);
+  newTaskItem.css('display','');
+  const checker = newTaskItem.find("input");
+  checker.prop('checked', check)
   if (check) {
-    checker.parentElement.classList.add("todo-item--checked");
+    $(checker).parent().addClass("todo-item--checked");
   }
-  listContainer.appendChild(newTaskItem);
+  $(listContainer).append(newTaskItem);
 }
 
 // On form submit
-taskForm.addEventListener("submit", (event) => {
+$(taskForm).submit((event) => {
   event.preventDefault();
-  const formInput = taskForm.elements.value.value;
+  const formInput = $(taskForm).find('input[name="value"]').val();
   if (formInput.trim() === "") {
     alert("Empty input cannot be submitted");
     return;
@@ -38,14 +37,14 @@ taskForm.addEventListener("submit", (event) => {
   localStorage.setItem("TaskList", JSON.stringify(taskStorage));
 
   generateTaskBlock(formInput, false);
-  taskForm.elements.value.value = "";
+  $(taskForm).find('input[name="value"]').val("");
 });
 
 // On delete click
-listContainer.addEventListener("click", (event) => {
-  if (event.target.classList.contains("todo-item__delete")) {
-    const description = event.target.previousElementSibling.textContent;
-    event.target.parentElement.remove();
+$(document).click((event) => {
+  if ($(event.target).hasClass("todo-item__delete")) {
+    const description = $(event.target).prev().text();
+    $(event.target).parent().remove();
 
     taskStorage = taskStorage.filter((task) => task.task !== description);
     localStorage.setItem("TaskList", JSON.stringify(taskStorage));
@@ -53,9 +52,9 @@ listContainer.addEventListener("click", (event) => {
 });
 
 // On checkbox click
-listContainer.addEventListener("click", (event) => {
+$(document).click((event) => {
   if (event.target.type === "checkbox") {
-    const itemTextContent = event.target.nextElementSibling.textContent;
+    const itemTextContent = $(event.target).next().text();
     taskStorage = taskStorage.map((taskObj) => {
       if (taskObj.task === itemTextContent) {
         taskObj.completed = !taskObj.completed;
@@ -64,9 +63,9 @@ listContainer.addEventListener("click", (event) => {
     });
 
     if (event.target.checked) {
-      event.target.parentElement.classList.add("todo-item--checked");
+      $(event.target).parent().addClass("todo-item--checked");
     } else {
-      event.target.parentElement.classList.remove("todo-item--checked");
+      $(event.target).parent().removeClass("todo-item--checked");
     }
 
     localStorage.setItem("TaskList", JSON.stringify(taskStorage));
