@@ -1,1 +1,1 @@
-# 21.1-Babel
+# Refactored JavaScript project using jQuery and Bootstrap
